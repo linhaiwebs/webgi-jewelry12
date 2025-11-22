@@ -1403,6 +1403,7 @@ table {
         .tab-panel {
           display: none;
           animation: fadeIn 0.4s ease-out;
+          text-align: center;
 
           &.active {
             display: block;
