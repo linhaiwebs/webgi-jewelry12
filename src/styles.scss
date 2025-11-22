@@ -1008,8 +1008,8 @@ table {
     background: $white;
     padding: 50px;
     border-radius: 20px;
-    max-width: 500px;
-    width: 90%;
+    max-width: min(80%, 600px);
+    width: 80%;
     text-align: center;
     animation: modalFadeIn 0.3s ease-out;
     max-height: 90vh;
@@ -1017,12 +1017,12 @@ table {
 
     @media (max-width: 600px) {
       padding: 30px 20px;
-      width: 95%;
+      width: 85%;
     }
 
     @media (max-width: 480px) {
       padding: 25px 15px;
-      width: 95%;
+      width: 90%;
       max-height: 85vh;
     }
 
@@ -1224,6 +1224,8 @@ table {
   background: linear-gradient(135deg, #f5e6e8 0%, #d4a5a5 100%);
   z-index: 1002;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 
   &.show {
     display: block;
@@ -1232,12 +1234,13 @@ table {
   .completion-content {
     max-width: 800px;
     margin: 0 auto;
-    padding: 60px 30px;
+    padding: 60px 30px 100px;
     text-align: center;
     position: relative;
+    min-height: 100vh;
 
     @media (max-width: 600px) {
-      padding: 40px 20px;
+      padding: 40px 20px 120px;
     }
 
     .btn-close-completion {
@@ -1315,6 +1318,24 @@ table {
 
         @media (max-width: 600px) {
           font-size: rem(36);
+        }
+      }
+
+      .engraving-note {
+        font-family: $archivo;
+        font-size: rem(12);
+        color: $text;
+        opacity: 0.6;
+        margin-top: 20px;
+        line-height: 1.6;
+        font-weight: 300;
+        text-align: left;
+        padding: 0 10px;
+
+        @media (max-width: 600px) {
+          font-size: rem(11);
+          margin-top: 15px;
+          line-height: 1.5;
         }
       }
     }
@@ -1420,6 +1441,9 @@ table {
         overflow: hidden;
         border-radius: 10px;
         background: rgba(255, 255, 255, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
 
         @media (max-width: 600px) {
           max-width: 280px;
