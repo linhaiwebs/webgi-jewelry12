@@ -738,4 +738,326 @@ document.querySelector('.music--control--2')?.addEventListener('click', () => {
     playMusic()
 })
 
+/////////////////////////////////////////////////////////////////////////
+///// CUSTOMIZATION DATA MANAGEMENT WITH LOCALSTORAGE
+
+interface CustomizationData {
+    gemColor: string;
+    material: string;
+    engravingText: string;
+    timestamp: number;
+}
+
+function saveCustomization(data: CustomizationData) {
+    localStorage.setItem('ringCustomization', JSON.stringify(data));
+}
+
+function loadCustomization(): CustomizationData | null {
+    const data = localStorage.getItem('ringCustomization');
+    return data ? JSON.parse(data) : null;
+}
+
+function getCurrentGemColor(): string {
+    const activeGem = document.querySelector('.colors--list li.active');
+    if (!activeGem) return 'ruby';
+    return activeGem.className.replace('active', '').trim();
+}
+
+function getCurrentMaterial(): string {
+    const activeMaterial = document.querySelector('.materials--list li.active');
+    if (!activeMaterial) return 'default';
+    return activeMaterial.className.replace('active', '').trim();
+}
+
+/////////////////////////////////////////////////////////////////////////
+///// COMPLETION BUTTON AND MODAL HANDLERS
+
+const configComplete = document.querySelector('.config--complete') as HTMLElement;
+const engravingModal = document.getElementById('engravingModal') as HTMLElement;
+const btnCancel = document.getElementById('btnCancel') as HTMLElement;
+const btnConfirm = document.getElementById('btnConfirm') as HTMLElement;
+const engravingTextInput = document.getElementById('engravingText') as HTMLTextAreaElement;
+const customLoader = document.getElementById('customLoader') as HTMLElement;
+const completionScreen = document.getElementById('completionScreen') as HTMLElement;
+const btnCloseCompletion = document.getElementById('btnCloseCompletion') as HTMLElement;
+const displayEngravingText = document.getElementById('displayEngravingText') as HTMLElement;
+const btnShare = document.getElementById('btnShare') as HTMLElement;
+const previewCanvas = document.getElementById('preview-canvas') as HTMLCanvasElement;
+
+// Show modal when completion button clicked
+configComplete?.addEventListener('click', () => {
+    engravingModal.classList.add('show');
+    engravingTextInput.value = '';
+    engravingTextInput.focus();
+});
+
+// Close modal on cancel
+btnCancel?.addEventListener('click', () => {
+    engravingModal.classList.remove('show');
+});
+
+// Close modal on outside click
+engravingModal?.addEventListener('click', (e) => {
+    if (e.target === engravingModal) {
+        engravingModal.classList.remove('show');
+    }
+});
+
+// Confirm and show loading
+btnConfirm?.addEventListener('click', () => {
+    const engravingText = engravingTextInput.value.trim();
+
+    if (!engravingText) {
+        alert('请输入刻字内容');
+        return;
+    }
+
+    // Hide modal
+    engravingModal.classList.remove('show');
+
+    // Show loading
+    customLoader.classList.add('show');
+
+    // Save customization data
+    const customizationData: CustomizationData = {
+        gemColor: getCurrentGemColor(),
+        material: getCurrentMaterial(),
+        engravingText: engravingText,
+        timestamp: Date.now()
+    };
+    saveCustomization(customizationData);
+
+    // Simulate loading time
+    setTimeout(() => {
+        customLoader.classList.remove('show');
+        showCompletionScreen(customizationData);
+    }, 2500);
+});
+
+// Show completion screen
+function showCompletionScreen(data: CustomizationData) {
+    displayEngravingText.textContent = data.engravingText;
+
+    // Draw preview on canvas
+    drawRingPreview(data);
+
+    // Show completion screen
+    completionScreen.classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+// Close completion screen
+btnCloseCompletion?.addEventListener('click', () => {
+    completionScreen.classList.remove('show');
+    document.body.style.overflow = '';
+});
+
+// Draw ring preview on canvas
+function drawRingPreview(data: CustomizationData) {
+    const ctx = previewCanvas.getContext('2d');
+    if (!ctx) return;
+
+    const width = previewCanvas.width = 400;
+    const height = previewCanvas.height = 300;
+
+    // Clear canvas
+    ctx.clearRect(0, 0, width, height);
+
+    // Background gradient
+    const gradient = ctx.createLinearGradient(0, 0, width, height);
+    gradient.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
+    gradient.addColorStop(1, 'rgba(240, 220, 220, 0.6)');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, width, height);
+
+    // Draw simplified ring representation
+    ctx.save();
+    ctx.translate(width / 2, height / 2);
+
+    // Ring band
+    ctx.strokeStyle = getMaterialColor(data.material);
+    ctx.lineWidth = 20;
+    ctx.beginPath();
+    ctx.arc(0, 0, 80, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Inner shadow
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(0, 0, 70, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Gem
+    ctx.fillStyle = getGemColor(data.gemColor);
+    ctx.beginPath();
+    ctx.moveTo(0, -100);
+    ctx.lineTo(-15, -70);
+    ctx.lineTo(-10, -50);
+    ctx.lineTo(10, -50);
+    ctx.lineTo(15, -70);
+    ctx.closePath();
+    ctx.fill();
+
+    // Gem outline
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Gem sparkle
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+    ctx.beginPath();
+    ctx.arc(-5, -75, 3, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+
+    // Display customization info
+    ctx.fillStyle = '#52322B';
+    ctx.font = '14px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText(`材质: ${getMaterialName(data.material)}`, width / 2, height - 50);
+    ctx.fillText(`宝石: ${getGemName(data.gemColor)}`, width / 2, height - 30);
+}
+
+// Helper functions for colors and names
+function getMaterialColor(material: string): string {
+    const colors: {[key: string]: string} = {
+        'default': '#fea04d',
+        'silver-gold': '#d4d4d4',
+        'silver-silver': '#e8e8e8',
+        'gold-gold': '#fea04d',
+        'rose-silver': '#f5c5c5',
+        'gold-rose': '#fea04d',
+        'rose-rose': '#f5a5a5'
+    };
+    return colors[material] || '#fea04d';
+}
+
+function getGemColor(gemColor: string): string {
+    const colors: {[key: string]: string} = {
+        'ruby': '#f70db1',
+        'faint': '#CFECEC',
+        'fancy': '#a9cbe2',
+        'aqua': '#62cffe',
+        'swiss': '#76dce4',
+        'yellow': '#efe75b',
+        'orange': '#eb8e17',
+        'green': '#17ebb5',
+        'emerald': '#5eca00',
+        'rose': '#fa37d7',
+        'violet': '#c200f2'
+    };
+    return colors[gemColor] || '#f70db1';
+}
+
+function getMaterialName(material: string): string {
+    const names: {[key: string]: string} = {
+        'default': '金银混搭',
+        'silver-gold': '银金混搭',
+        'silver-silver': '纯银',
+        'gold-gold': '纯金',
+        'rose-silver': '玫瑰银',
+        'gold-rose': '金玫瑰',
+        'rose-rose': '玫瑰金'
+    };
+    return names[material] || '金银混搭';
+}
+
+function getGemName(gemColor: string): string {
+    const names: {[key: string]: string} = {
+        'ruby': '红宝石',
+        'faint': '淡蓝宝石',
+        'fancy': '幻彩蓝宝石',
+        'aqua': '海蓝宝石',
+        'swiss': '瑞士蓝宝石',
+        'yellow': '黄宝石',
+        'orange': '橙宝石',
+        'green': '绿宝石',
+        'emerald': '祖母绿',
+        'rose': '粉宝石',
+        'violet': '紫宝石'
+    };
+    return names[gemColor] || '红宝石';
+}
+
+/////////////////////////////////////////////////////////////////////////
+///// WECHAT SHARING (WITHOUT SDK)
+
+btnShare?.addEventListener('click', async () => {
+    const shareData = {
+        title: '致筱雅 · 永恒的誓言',
+        text: '为闫筱雅定制的专属爱情信物',
+        url: window.location.href
+    };
+
+    // Try native Web Share API first
+    if (navigator.share) {
+        try {
+            await navigator.share(shareData);
+            showShareSuccess();
+        } catch (err) {
+            if ((err as Error).name !== 'AbortError') {
+                showShareInstructions();
+            }
+        }
+    } else {
+        // Fallback: copy link to clipboard
+        try {
+            await navigator.clipboard.writeText(window.location.href);
+            showShareFallback();
+        } catch (err) {
+            showShareInstructions();
+        }
+    }
+});
+
+function showShareSuccess() {
+    showToast('分享成功！');
+}
+
+function showShareFallback() {
+    showToast('链接已复制到剪贴板，请在微信中粘贴分享');
+}
+
+function showShareInstructions() {
+    alert('请点击浏览器的分享按钮，选择微信进行分享');
+}
+
+function showToast(message: string) {
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 15px 30px;
+        border-radius: 8px;
+        font-size: 14px;
+        z-index: 10000;
+        animation: fadeInOut 2s ease-in-out;
+    `;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    // Add animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+            20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+        }
+    `;
+    document.head.appendChild(style);
+
+    setTimeout(() => {
+        document.body.removeChild(toast);
+        document.head.removeChild(style);
+    }, 2000);
+}
+
 setupViewer()
