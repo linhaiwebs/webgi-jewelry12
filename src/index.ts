@@ -746,6 +746,7 @@ interface CustomizationData {
     material: string;
     engravingText: string;
     timestamp: number;
+    orderNumber: string;
 }
 
 function saveCustomization(data: CustomizationData) {
@@ -769,6 +770,18 @@ function getCurrentMaterial(): string {
     return activeMaterial.className.replace('active', '').trim();
 }
 
+function generateOrderNumber(): string {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    const timestamp = Date.now().toString(36).toUpperCase().slice(-4);
+    let result = timestamp;
+
+    for (let i = 0; i < 12; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+
+    return result.match(/.{1,4}/g)?.join('-') || result;
+}
+
 /////////////////////////////////////////////////////////////////////////
 ///// COMPLETION BUTTON AND MODAL HANDLERS
 
@@ -781,6 +794,7 @@ const customLoader = document.getElementById('customLoader') as HTMLElement;
 const completionScreen = document.getElementById('completionScreen') as HTMLElement;
 const btnCloseCompletion = document.getElementById('btnCloseCompletion') as HTMLElement;
 const displayEngravingText = document.getElementById('displayEngravingText') as HTMLElement;
+const displayOrderNumber = document.getElementById('displayOrderNumber') as HTMLElement;
 const btnShare = document.getElementById('btnShare') as HTMLElement;
 const previewCanvas = document.getElementById('preview-canvas') as HTMLCanvasElement;
 let previewViewer: ViewerApp | null = null;
@@ -825,7 +839,8 @@ btnConfirm?.addEventListener('click', () => {
         gemColor: getCurrentGemColor(),
         material: getCurrentMaterial(),
         engravingText: engravingText,
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        orderNumber: generateOrderNumber()
     };
     saveCustomization(customizationData);
 
@@ -932,12 +947,36 @@ async function applyCustomizationToPreview(data: CustomizationData) {
 // Show completion screen
 async function showCompletionScreen(data: CustomizationData) {
     displayEngravingText.textContent = data.engravingText;
+    displayOrderNumber.textContent = data.orderNumber;
 
     await initPreviewViewer();
     await applyCustomizationToPreview(data);
 
+    setupTabs();
+
     completionScreen.classList.add('show');
     document.body.style.overflow = 'hidden';
+}
+
+// Setup tab switching
+function setupTabs() {
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabPanels = document.querySelectorAll('.tab-panel');
+
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const tabName = button.getAttribute('data-tab');
+
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            tabPanels.forEach(panel => panel.classList.remove('active'));
+
+            button.classList.add('active');
+            const targetPanel = document.getElementById(`${tabName}-panel`);
+            if (targetPanel) {
+                targetPanel.classList.add('active');
+            }
+        });
+    });
 }
 
 // Close completion screen

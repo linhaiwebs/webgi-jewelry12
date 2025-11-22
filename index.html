@@ -252,10 +252,50 @@
 				<h3>刻字内容</h3>
 				<p id="displayEngravingText">-</p>
 			</div>
+			<div class="order-number-display">
+				<h3>编号</h3>
+				<p id="displayOrderNumber">-</p>
+			</div>
 			<div class="ring-preview">
-				<div class="preview-label">您的定制效果</div>
-				<div id="preview-viewer-container">
-					<canvas id="preview-canvas"></canvas>
+				<div class="preview-tabs">
+					<button class="tab-button active" data-tab="preview">您的定制效果</button>
+					<button class="tab-button" data-tab="designer">设计师简介</button>
+				</div>
+				<div class="tab-content">
+					<div class="tab-panel active" id="preview-panel">
+						<div id="preview-viewer-container">
+							<canvas id="preview-canvas"></canvas>
+						</div>
+					</div>
+					<div class="tab-panel" id="designer-panel">
+						<div class="designer-info">
+							<div class="designer-avatar">
+								<svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<circle cx="12" cy="8" r="4" stroke="#52322B" stroke-width="2"/>
+									<path d="M6 21c0-3.314 2.686-6 6-6s6 2.686 6 6" stroke="#52322B" stroke-width="2" stroke-linecap="round"/>
+								</svg>
+							</div>
+							<h3 class="designer-name">CindyChao - 赵心绮</h3>
+							<p class="designer-title">高级珠宝设计师</p>
+							<p class="designer-bio">
+								国际知名珠宝艺术家，以独特的东方美学与西方工艺结合闻名。每一件作品都是艺术与情感的完美融合，为您打造独一无二的爱情信物。
+							</p>
+							<div class="designer-features">
+								<div class="feature-item">
+									<span class="feature-icon">✦</span>
+									<span>手工定制</span>
+								</div>
+								<div class="feature-item">
+									<span class="feature-icon">✦</span>
+									<span>匠心工艺</span>
+								</div>
+								<div class="feature-item">
+									<span class="feature-icon">✦</span>
+									<span>艺术传承</span>
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 			<div class="completion-message">

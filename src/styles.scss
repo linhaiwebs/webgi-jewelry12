@@ -138,6 +138,10 @@ table {
   left: 0;
   touch-action: none;
   pointer-events: none;
+
+  @media (max-width: 768px) {
+    height: 100vh;
+  }
 }
 
 #webgi-canvas-container {
@@ -146,6 +150,11 @@ table {
   margin: 0;
   padding: 0;
   position: fixed;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    height: 100vh;
+  }
 }
 
 /* LOADER */
@@ -1003,9 +1012,18 @@ table {
     width: 90%;
     text-align: center;
     animation: modalFadeIn 0.3s ease-out;
+    max-height: 90vh;
+    overflow-y: auto;
 
     @media (max-width: 600px) {
-      padding: 30px;
+      padding: 30px 20px;
+      width: 95%;
+    }
+
+    @media (max-width: 480px) {
+      padding: 25px 15px;
+      width: 95%;
+      max-height: 85vh;
     }
 
     h2 {
@@ -1013,6 +1031,11 @@ table {
       font-size: rem(36);
       margin-bottom: 15px;
       color: $text;
+
+      @media (max-width: 480px) {
+        font-size: rem(28);
+        margin-bottom: 10px;
+      }
     }
 
     p {
@@ -1020,6 +1043,11 @@ table {
       color: $text;
       margin-bottom: 25px;
       opacity: 0.8;
+
+      @media (max-width: 480px) {
+        font-size: rem(13);
+        margin-bottom: 15px;
+      }
     }
 
     textarea {
@@ -1033,6 +1061,13 @@ table {
       resize: vertical;
       margin-bottom: 30px;
       transition: border-color 0.3s;
+
+      @media (max-width: 480px) {
+        min-height: 100px;
+        padding: 12px;
+        font-size: rem(14);
+        margin-bottom: 20px;
+      }
 
       &:focus {
         outline: none;
@@ -1259,7 +1294,7 @@ table {
       background: rgba(255, 255, 255, 0.6);
       padding: 30px;
       border-radius: 15px;
-      margin-bottom: 40px;
+      margin-bottom: 30px;
       animation: fadeInUp 0.6s ease-out 0.2s both;
 
       h3 {
@@ -1284,6 +1319,36 @@ table {
       }
     }
 
+    .order-number-display {
+      background: rgba(255, 255, 255, 0.6);
+      padding: 25px;
+      border-radius: 15px;
+      margin-bottom: 40px;
+      animation: fadeInUp 0.6s ease-out 0.3s both;
+
+      h3 {
+        font-family: $archivo;
+        font-size: rem(16);
+        font-weight: 400;
+        color: $text;
+        margin-bottom: 15px;
+        opacity: 0.7;
+      }
+
+      p {
+        font-family: 'Courier New', monospace;
+        font-size: rem(24);
+        font-weight: 600;
+        color: $text;
+        letter-spacing: 0.05em;
+        word-wrap: break-word;
+
+        @media (max-width: 600px) {
+          font-size: rem(18);
+        }
+      }
+    }
+
     .ring-preview {
       background: rgba(255, 255, 255, 0.4);
       padding: 40px;
@@ -1291,12 +1356,58 @@ table {
       margin-bottom: 40px;
       animation: fadeInUp 0.6s ease-out 0.4s both;
 
-      .preview-label {
-        font-family: $archivo;
-        font-size: rem(14);
-        color: $text;
-        margin-bottom: 20px;
-        opacity: 0.7;
+      @media (max-width: 600px) {
+        padding: 25px;
+      }
+
+      .preview-tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 25px;
+        border-bottom: 2px solid rgba(82, 50, 43, 0.2);
+
+        .tab-button {
+          flex: 1;
+          padding: 12px 20px;
+          background: transparent;
+          border: none;
+          border-bottom: 3px solid transparent;
+          font-family: $archivo;
+          font-size: rem(15);
+          font-weight: 500;
+          color: $text;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          opacity: 0.6;
+          margin-bottom: -2px;
+
+          @media (max-width: 600px) {
+            font-size: rem(14);
+            padding: 10px 15px;
+          }
+
+          &:hover {
+            opacity: 0.9;
+            background: rgba(255, 255, 255, 0.3);
+          }
+
+          &.active {
+            opacity: 1;
+            border-bottom-color: $text;
+            font-weight: 600;
+          }
+        }
+      }
+
+      .tab-content {
+        .tab-panel {
+          display: none;
+          animation: fadeIn 0.4s ease-out;
+
+          &.active {
+            display: block;
+          }
+        }
       }
 
       #preview-viewer-container {
@@ -1319,6 +1430,84 @@ table {
         width: 100%;
         height: 100%;
         display: block;
+      }
+
+      .designer-info {
+        text-align: center;
+        padding: 20px;
+
+        .designer-avatar {
+          width: 80px;
+          height: 80px;
+          margin: 0 auto 20px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(255, 255, 255, 0.6);
+          border-radius: 50%;
+          border: 2px solid $text;
+        }
+
+        .designer-name {
+          font-family: $playfair;
+          font-size: rem(24);
+          font-weight: 600;
+          color: $text;
+          margin-bottom: 8px;
+
+          @media (max-width: 600px) {
+            font-size: rem(20);
+          }
+        }
+
+        .designer-title {
+          font-family: $archivo;
+          font-size: rem(14);
+          color: $text;
+          opacity: 0.7;
+          margin-bottom: 20px;
+        }
+
+        .designer-bio {
+          font-family: $archivo;
+          font-size: rem(15);
+          color: $text;
+          line-height: 1.8;
+          margin-bottom: 25px;
+          max-width: 500px;
+          margin-left: auto;
+          margin-right: auto;
+
+          @media (max-width: 600px) {
+            font-size: rem(14);
+            line-height: 1.6;
+          }
+        }
+
+        .designer-features {
+          display: flex;
+          justify-content: center;
+          gap: 30px;
+          flex-wrap: wrap;
+
+          @media (max-width: 600px) {
+            gap: 20px;
+          }
+
+          .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: $archivo;
+            font-size: rem(14);
+            color: $text;
+
+            .feature-icon {
+              color: $text;
+              font-size: rem(18);
+            }
+          }
+        }
       }
     }
 
@@ -1383,6 +1572,15 @@ table {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 
