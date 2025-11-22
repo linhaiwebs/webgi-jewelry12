@@ -996,15 +996,27 @@ table {
   line-height: 1.5;
   letter-spacing: 0.2em;
   color: #cb6b56;
-  font-family: $archivo;
-  font-weight: 300;
+  font-family: $qwitcher;
+  font-weight: 400;
 
   span {
     display: inline-block;
   }
 
   @media (max-width: 600px) {
-    font-size: rem(30);
+    font-size: rem(26);
+    writing-mode: horizontal-tb;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    line-height: 1.8;
+    letter-spacing: 0.05em;
+    max-width: 80%;
+    margin: 0 auto;
+
+    span {
+      writing-mode: horizontal-tb;
+    }
   }
 }
 
@@ -1073,7 +1085,7 @@ table {
     }
 
     textarea {
-      width: 100%;
+      width: 90%;
       min-height: 120px;
       padding: 15px;
       border: 2px solid #e0e0e0;
