@@ -772,16 +772,79 @@ function getCurrentMaterial(): string {
     return activeMaterial.className.replace('active', '').trim();
 }
 
-function generateOrderNumber(): string {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    const timestamp = Date.now().toString(36).toUpperCase().slice(-4);
-    let result = timestamp;
+// Generate a stable user fingerprint
+function getUserFingerprint(): string {
+    // Check if we already have a fingerprint stored
+    let fingerprint = localStorage.getItem('userFingerprint');
 
-    for (let i = 0; i < 12; i++) {
-        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    if (fingerprint) {
+        return fingerprint;
     }
 
-    return result.match(/.{1,4}/g)?.join('-') || result;
+    // Generate a new fingerprint based on browser characteristics
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+        ctx.textBaseline = 'top';
+        ctx.font = '14px Arial';
+        ctx.fillText('fingerprint', 2, 2);
+    }
+    const canvasData = canvas.toDataURL();
+
+    const components = [
+        navigator.userAgent,
+        navigator.language,
+        screen.colorDepth,
+        screen.width + 'x' + screen.height,
+        new Date().getTimezoneOffset(),
+        canvasData
+    ];
+
+    // Simple hash function
+    let hash = 0;
+    const combined = components.join('|');
+    for (let i = 0; i < combined.length; i++) {
+        const char = combined.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+    }
+
+    fingerprint = Math.abs(hash).toString(36).toUpperCase();
+    localStorage.setItem('userFingerprint', fingerprint);
+
+    return fingerprint;
+}
+
+function generateOrderNumber(): string {
+    // Check if user already has an order number
+    const existingOrder = localStorage.getItem('orderNumber');
+    if (existingOrder) {
+        return existingOrder;
+    }
+
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    const fingerprint = getUserFingerprint();
+
+    // Use fingerprint as seed for consistent random generation
+    let hash = 0;
+    for (let i = 0; i < fingerprint.length; i++) {
+        hash = fingerprint.charCodeAt(i) + ((hash << 5) - hash);
+    }
+
+    // Generate order number based on fingerprint
+    let result = fingerprint.slice(0, 4).toUpperCase();
+
+    // Use seeded random for remaining characters
+    for (let i = 0; i < 12; i++) {
+        hash = (hash * 9301 + 49297) % 233280;
+        const index = Math.floor((hash / 233280) * chars.length);
+        result += chars.charAt(index);
+    }
+
+    const orderNumber = result.match(/.{1,4}/g)?.join('-') || result;
+    localStorage.setItem('orderNumber', orderNumber);
+
+    return orderNumber;
 }
 
 /////////////////////////////////////////////////////////////////////////
