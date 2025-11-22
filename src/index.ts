@@ -1018,6 +1018,7 @@ async function showCompletionScreen(data: CustomizationData) {
     await applyCustomizationToPreview(data);
 
     setupTabs();
+    setupScrollIndicator();
 
     completionScreen.classList.add('show');
     // Allow body overflow so completion screen can scroll
@@ -1026,6 +1027,36 @@ async function showCompletionScreen(data: CustomizationData) {
     document.body.style.width = '100%';
     document.body.style.height = '100%';
     canvasView.style.touchAction = 'none';
+}
+
+// Setup scroll indicator for mobile
+function setupScrollIndicator() {
+    const scrollIndicator = document.querySelector('.mobile-scroll-indicator') as HTMLElement;
+    if (!scrollIndicator) return;
+
+    let hasScrolled = false;
+
+    const hideIndicator = () => {
+        if (!hasScrolled && completionScreen.scrollTop > 50) {
+            hasScrolled = true;
+            scrollIndicator.style.opacity = '0';
+            scrollIndicator.style.transition = 'opacity 0.3s ease-out';
+            setTimeout(() => {
+                scrollIndicator.style.display = 'none';
+            }, 300);
+        }
+    };
+
+    completionScreen.addEventListener('scroll', hideIndicator);
+
+    // Reset when closing
+    const resetIndicator = () => {
+        hasScrolled = false;
+        scrollIndicator.style.display = '';
+        scrollIndicator.style.opacity = '1';
+    };
+
+    btnCloseCompletion?.addEventListener('click', resetIndicator, { once: true });
 }
 
 // Setup tab switching

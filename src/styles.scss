@@ -1262,9 +1262,13 @@ table {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
 
-  // Custom scrollbar styling
+  // Custom scrollbar styling for desktop
   &::-webkit-scrollbar {
     width: 8px;
+
+    @media (max-width: 768px) {
+      width: 6px;
+    }
   }
 
   &::-webkit-scrollbar-track {
@@ -1278,6 +1282,51 @@ table {
 
     &:hover {
       background: rgba(82, 50, 43, 0.7);
+    }
+  }
+
+  // Mobile scroll indicator
+  .mobile-scroll-indicator {
+    display: none;
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10003;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 12px 24px;
+    border-radius: 30px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    align-items: center;
+    gap: 8px;
+    animation: bounceUp 2s ease-in-out infinite;
+    pointer-events: none;
+
+    @media (max-width: 768px) {
+      display: flex;
+    }
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    span {
+      font-family: $archivo;
+      font-size: rem(14);
+      color: $text;
+      font-weight: 500;
+    }
+  }
+
+  @keyframes bounceUp {
+    0%, 100% {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+    50% {
+      transform: translateX(-50%) translateY(-8px);
+      opacity: 0.7;
     }
   }
 
