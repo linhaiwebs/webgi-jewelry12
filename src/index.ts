@@ -783,6 +783,8 @@ const btnCloseCompletion = document.getElementById('btnCloseCompletion') as HTML
 const displayEngravingText = document.getElementById('displayEngravingText') as HTMLElement;
 const btnShare = document.getElementById('btnShare') as HTMLElement;
 const previewCanvas = document.getElementById('preview-canvas') as HTMLCanvasElement;
+let previewViewer: ViewerApp | null = null;
+let previewInitialized = false;
 
 // Show modal when completion button clicked
 configComplete?.addEventListener('click', () => {
@@ -834,14 +836,106 @@ btnConfirm?.addEventListener('click', () => {
     }, 2500);
 });
 
+// Initialize preview viewer
+async function initPreviewViewer() {
+    if (previewInitialized) return;
+
+    try {
+        previewViewer = new ViewerApp({
+            canvas: previewCanvas,
+            useGBufferDepth: true,
+            isAntialiased: false
+        });
+
+        previewViewer.renderer.displayCanvasScaling = 0.8;
+
+        const manager = await previewViewer.addPlugin(AssetManagerPlugin);
+        await previewViewer.addPlugin(new TonemapPlugin(true));
+        await previewViewer.addPlugin(DiamondPlugin);
+
+        await manager.addFromPath("./assets/ring_webgi.glb");
+
+        const camera = previewViewer.scene.activeCamera;
+        camera.position.set(0, 0.5, 4);
+        camera.target.set(0, 0, 0);
+        camera.setCameraOptions({ controlsEnabled: false });
+
+        previewViewer.setBackground(new Color('#EEB7B5').convertSRGBToLinear());
+
+        previewInitialized = true;
+    } catch (error) {
+        console.error('Failed to initialize preview viewer:', error);
+    }
+}
+
+// Apply customization to preview viewer
+async function applyCustomizationToPreview(data: CustomizationData) {
+    if (!previewViewer || !previewInitialized) return;
+
+    try {
+        const silver = previewViewer.scene.findObjectsByName('silver')[0] as any as Mesh<BufferGeometry, MeshStandardMaterial2>;
+        const gold = previewViewer.scene.findObjectsByName('gold')[0] as any as Mesh<BufferGeometry, MeshStandardMaterial2>;
+
+        if (data.material === 'default' || data.material === 'silver-silver') {
+            if (silver) silver.visible = true;
+            if (gold) gold.visible = false;
+        } else if (data.material === 'silver-gold') {
+            if (silver) silver.visible = true;
+            if (gold) gold.visible = true;
+        } else if (data.material === 'gold-gold') {
+            if (silver) silver.visible = false;
+            if (gold) gold.visible = true;
+        } else if (data.material === 'rose-silver') {
+            if (silver) silver.visible = true;
+            if (gold) gold.visible = false;
+            if (gold?.material) {
+                gold.material.setValues({ color: new Color(0xE8C4B8).convertSRGBToLinear() });
+            }
+        } else if (data.material === 'gold-rose' || data.material === 'rose-rose') {
+            if (silver) silver.visible = false;
+            if (gold) gold.visible = true;
+            if (gold?.material) {
+                gold.material.setValues({ color: new Color(0xE8C4B8).convertSRGBToLinear() });
+            }
+        }
+
+        const gemColorMap: { [key: string]: string } = {
+            'ruby': '#E0115F',
+            'emerald': '#50C878',
+            'aqua': '#00CED1',
+            'orange': '#FF8C00',
+            'yellow': '#FFD700',
+            'green': '#228B22',
+            'rose': '#FF69B4',
+            'violet': '#8F00FF',
+            'fancy': '#9370DB',
+            'faint': '#E6E6FA',
+            'swiss': '#00BFFF'
+        };
+
+        const gemColor = gemColorMap[data.gemColor] || '#E0115F';
+        const colorObj = new Color(gemColor).convertSRGBToLinear();
+
+        for (const objName of diamondsObjectNames) {
+            const diamond = previewViewer.scene.findObjectsByName(objName)[0];
+            if (diamond && (diamond as any).material) {
+                (diamond as any).material.setValues({ color: colorObj });
+            }
+        }
+
+        await previewViewer.setDirty();
+    } catch (error) {
+        console.error('Failed to apply customization to preview:', error);
+    }
+}
+
 // Show completion screen
-function showCompletionScreen(data: CustomizationData) {
+async function showCompletionScreen(data: CustomizationData) {
     displayEngravingText.textContent = data.engravingText;
 
-    // Draw preview on canvas
-    drawRingPreview(data);
+    await initPreviewViewer();
+    await applyCustomizationToPreview(data);
 
-    // Show completion screen
     completionScreen.classList.add('show');
     document.body.style.overflow = 'hidden';
 }
