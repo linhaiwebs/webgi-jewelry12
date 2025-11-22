@@ -1261,6 +1261,15 @@ table {
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
+  touch-action: pan-y;
+  will-change: scroll-position;
+
+  // Force GPU acceleration for smoother scrolling
+  @media (max-width: 768px) {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+  }
 
   // Custom scrollbar styling for desktop
   &::-webkit-scrollbar {
@@ -1340,13 +1349,14 @@ table {
     padding: 60px 30px 100px;
     text-align: center;
     position: relative;
-    min-height: calc(100vh + 200px);
-    min-height: calc(100dvh + 200px);
+    min-height: calc(100vh + 300px);
+    min-height: calc(100dvh + 300px);
+    touch-action: pan-y;
 
     @media (max-width: 600px) {
-      padding: 40px 20px 200px;
-      min-height: calc(100vh + 400px);
-      min-height: calc(100dvh + 400px);
+      padding: 40px 20px 250px;
+      min-height: calc(100vh + 500px);
+      min-height: calc(100dvh + 500px);
     }
 
     .btn-close-completion {

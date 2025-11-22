@@ -1021,12 +1021,11 @@ async function showCompletionScreen(data: CustomizationData) {
     setupScrollIndicator();
 
     completionScreen.classList.add('show');
-    // Allow body overflow so completion screen can scroll
-    document.body.style.overflow = 'visible';
-    document.body.style.position = 'fixed';
-    document.body.style.width = '100%';
-    document.body.style.height = '100%';
-    canvasView.style.touchAction = 'none';
+    // Prevent background scrolling but allow completion screen to scroll
+    document.body.style.overflow = 'hidden';
+    completionScreen.style.touchAction = 'pan-y';
+    // Scroll to top of completion screen
+    completionScreen.scrollTop = 0;
 }
 
 // Setup scroll indicator for mobile
@@ -1084,9 +1083,7 @@ function setupTabs() {
 btnCloseCompletion?.addEventListener('click', () => {
     completionScreen.classList.remove('show');
     document.body.style.overflow = '';
-    document.body.style.position = '';
-    document.body.style.width = '';
-    document.body.style.height = '';
+    completionScreen.style.touchAction = '';
     canvasView.style.touchAction = 'pan-y';
 });
 
