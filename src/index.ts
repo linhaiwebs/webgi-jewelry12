@@ -248,7 +248,7 @@ async function setupViewer(){
             scrollTrigger: { trigger: ".cam-view-2", start: "top bottom", end: "top top", scrub: 1, immediateRender: false,
         }})
 
-        .to('.forever--text-bg', {opacity: 0.1, ease: "power4.inOut",
+        .to('.forever--text-bg', {opacity: 0.35, ease: "power4.inOut",
             scrollTrigger: { trigger: ".cam-view-2", start: "top bottom", end: 'top top', scrub: 1, immediateRender: false,
         }})
 
@@ -287,7 +287,7 @@ async function setupViewer(){
         .to('.forever--container', {opacity: 0, x: '-110%', ease: "power4.inOut",
             scrollTrigger: { trigger: ".cam-view-3", start: "top bottom", end: 'top top', scrub: 1, immediateRender: false
         }})
-        .to('.emotions--text-bg', {opacity: 0.1, ease: "power4.inOut",
+        .to('.emotions--text-bg', {opacity: 0.35, ease: "power4.inOut",
             scrollTrigger: { trigger: ".cam-view-3", start: "top bottom", end: 'top top', scrub: 1, immediateRender: false,
         }})
         .fromTo('.emotions--content', {opacity: 0, y: '130%'}, {opacity: 1, y: '0%', duration: 0.5, ease: "power4.inOut",
