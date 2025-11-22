@@ -136,7 +136,7 @@ table {
   position: fixed;
   top: 0;
   left: 0;
-  touch-action: none;
+  touch-action: pan-y;
   pointer-events: none;
 
   @media (max-width: 768px) {
@@ -1258,6 +1258,7 @@ table {
   background: linear-gradient(135deg, #f5e6e8 0%, #d4a5a5 100%);
   z-index: 1002;
   overflow-y: auto;
+  overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
 
@@ -1272,9 +1273,12 @@ table {
     text-align: center;
     position: relative;
     min-height: 100vh;
+    min-height: 100dvh;
 
     @media (max-width: 600px) {
-      padding: 40px 20px 120px;
+      padding: 40px 20px 150px;
+      min-height: calc(100vh + 100px);
+      min-height: calc(100dvh + 100px);
     }
 
     .btn-close-completion {

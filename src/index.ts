@@ -351,6 +351,7 @@ async function setupViewer(){
     document.querySelector('.btn-customize')?.addEventListener('click', () => {
         exploreView.style.pointerEvents = "none"
         canvasView.style.pointerEvents = "all"
+        canvasView.style.touchAction = "none"
         canvasContainer.style.zIndex = "1"
         document.body.style.overflowY = "hidden"
         document.body.style.cursor = "grab"
@@ -402,6 +403,7 @@ async function setupViewer(){
     document.querySelector('.button--exit')?.addEventListener('click', () => {
         exploreView.style.pointerEvents = "all"
         canvasView.style.pointerEvents = "none"
+        canvasView.style.touchAction = "pan-y"
         canvasContainer.style.zIndex = "unset"
         document.body.style.overflowY = "auto"
         exitContainer.style.display = "none"
@@ -956,6 +958,7 @@ async function showCompletionScreen(data: CustomizationData) {
 
     completionScreen.classList.add('show');
     document.body.style.overflow = 'hidden';
+    canvasView.style.touchAction = 'none';
 }
 
 // Setup tab switching
@@ -983,6 +986,7 @@ function setupTabs() {
 btnCloseCompletion?.addEventListener('click', () => {
     completionScreen.classList.remove('show');
     document.body.style.overflow = '';
+    canvasView.style.touchAction = 'pan-y';
 });
 
 // Draw ring preview on canvas
